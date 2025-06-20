@@ -8,7 +8,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newPersons, setNewPersons] = useState([])
-
+  
   useEffect(() => {
     console.log("myEffect")
     personService
@@ -16,6 +16,7 @@ const App = () => {
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
+        setNewPersons(response.data)
         console.log(response)
       })
   }, [])
