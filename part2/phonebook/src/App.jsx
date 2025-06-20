@@ -1,17 +1,23 @@
+import { useEffect } from 'react'
 import { useState } from 'react'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 },
-    { name: 'Wini Novianti', number: '085862856566', id: 5}
-  ]) 
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [newSearch, setNewSearch] = useState('')
   const [newPersons, setNewPersons] = useState([])
+
+  useEffect(() => {
+    console.log("myEffect")
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+        console.log(response)
+      })
+  }, [])
 
   const handleClick = (event) => {
     event.preventDefault()
@@ -25,11 +31,15 @@ const App = () => {
     if (persons.some(person => person.name === newName)) {
       alert(`${persons.name} is already on the phonebook`)
     } else {
-      setPersons(persons.concat(personObject))
+      axios
+      .post('http://localhost:3001/persons', personObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        console.log(response)
+        setNewName('')
+        setNewNumber('')
+      })    
     }
-    
-    setNewName('')
-    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
@@ -42,8 +52,6 @@ const App = () => {
   }
 
   const handleSearchChange = (event) => {
-    console.log(persons.filter(person => person.name.toLowerCase().includes(event.target.value)))
-    setNewSearch(event.target.value)
     setNewPersons(persons.filter(person => person.name.toLowerCase().includes(event.target.value.toLowerCase())))
   }
 
@@ -53,7 +61,7 @@ const App = () => {
       <form>
         <div>
           filter shown with
-          <input value={newSearch} onChange={handleSearchChange} />
+          <input onChange={handleSearchChange} />
         </div>
       </form>
       <div>
