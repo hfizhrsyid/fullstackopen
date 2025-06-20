@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useState } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+import Person from './components/person'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -10,14 +11,32 @@ const App = () => {
 
   useEffect(() => {
     console.log("myEffect")
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
         console.log(response)
       })
   }, [])
+
+  const deletePerson = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete ${name}`)) {
+        personService
+            .deletePerson(id)
+            .then(() => setPersons(persons.filter(person => person.id !== id)))
+    }
+  }
+  
+  const changePhoneNumber = (name, number) => {
+    const person = persons.find(p => p.name === name)
+    const personObject = { ...person, number: number }
+    personService
+      .changePhoneNumber(person.id, personObject)
+      .then(response => {
+        setPersons(persons.map(p => p.name === name ? response.data : p))
+      })
+  }
 
   const handleClick = (event) => {
     event.preventDefault()
@@ -28,11 +47,17 @@ const App = () => {
     }
     
     console.log(persons)
-    if (persons.some(person => person.name === newName)) {
-      alert(`${persons.name} is already on the phonebook`)
+    if (persons.some(person => person.name === newName && person.number === newNumber)) {
+      alert(`${newName} is already on the phonebook`)
+    } else if (persons.some(person => person.name === newName)) {
+      if (window.confirm(`${newName} already exist! Do you want to change the phone number?`)) {
+        changePhoneNumber(newName, newNumber)
+        setNewName('')
+        setNewNumber('')
+      }
     } else {
-      axios
-      .post('http://localhost:3001/persons', personObject)
+      personService
+      .updatePerson(personObject)
       .then(response => {
         setPersons(persons.concat(response.data))
         console.log(response)
@@ -83,7 +108,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {persons.map(person => <li key={person.name}>{person.name} {person.number}</li>)}
+        {persons.map(person => <Person key={person.name} name={person.name} id={person.id} number={person.number} deleteMyPerson={() => deletePerson(person.id, person.name)} />)}
       </ul>
     </div>
   )
