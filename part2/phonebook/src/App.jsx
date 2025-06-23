@@ -9,7 +9,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newPersons, setNewPersons] = useState([])
-  const [addedSuccess, setAddedSuccess] = useState(null)
+  const [status, setStatus] = useState(null)
+  const [booleanStatus, setBooleanStatus] = useState(null)
   
   useEffect(() => {
     console.log("myEffect")
@@ -39,6 +40,10 @@ const App = () => {
       .then(response => {
         setPersons(persons.map(p => p.name === name ? response.data : p))
       })
+      .catch(() => {
+        setBooleanStatus(false)
+        setStatus(`Information of ${name} has already been removed from server`)
+      })
   }
 
   const handleClick = (event) => {
@@ -57,7 +62,8 @@ const App = () => {
         changePhoneNumber(newName, newNumber)
         setNewName('')
         setNewNumber('')
-        setAddedSuccess(`Changed ${newName}'s number to ${newNumber}`)
+        setBooleanStatus(true)
+        setStatus(`Changed ${newName}'s number to ${newNumber}`)
       }
     } else {
       personService
@@ -67,7 +73,8 @@ const App = () => {
         console.log(response)
         setNewName('')
         setNewNumber('')
-        setAddedSuccess(`Added ${response.data.name}`)
+        setBooleanStatus(true)
+        setStatus(`Added ${response.data.name}`)
       })    
     }
   }
@@ -88,7 +95,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification name={addedSuccess}/>
+      <Notification name={status} status={booleanStatus} />
       <form>
         <div>
           filter shown with

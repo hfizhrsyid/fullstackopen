@@ -1,5 +1,4 @@
-.successful {
-    color: green;
+.notification {
     background: lightgrey;
     font-size: 20px;
     border-style: solid;
@@ -8,3 +7,11 @@
     margin-bottom: 10px;
     font-size: 36px;
 } 
+
+.successful {
+    color: green;
+}
+
+.failed {
+    color: red;
+}
