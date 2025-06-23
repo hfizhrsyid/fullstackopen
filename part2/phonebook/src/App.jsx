@@ -2,12 +2,14 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import personService from './services/persons'
 import Person from './components/person'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newPersons, setNewPersons] = useState([])
+  const [addedSuccess, setAddedSuccess] = useState(null)
   
   useEffect(() => {
     console.log("myEffect")
@@ -55,6 +57,7 @@ const App = () => {
         changePhoneNumber(newName, newNumber)
         setNewName('')
         setNewNumber('')
+        setAddedSuccess(`Changed ${newName}'s number to ${newNumber}`)
       }
     } else {
       personService
@@ -64,6 +67,7 @@ const App = () => {
         console.log(response)
         setNewName('')
         setNewNumber('')
+        setAddedSuccess(`Added ${response.data.name}`)
       })    
     }
   }
@@ -84,6 +88,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification name={addedSuccess}/>
       <form>
         <div>
           filter shown with
