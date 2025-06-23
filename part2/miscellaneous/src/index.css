@@ -33,6 +33,8 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+  color: bisque;
+  font-style: italic;
 }
 
 button {
@@ -46,6 +48,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
@@ -65,4 +68,28 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.note {
+  color: azure;
+  font-size: 15px;
+  padding-top: 10px;
+}
+
+.error {
+  color: red;
+  display: flex;
+  font-size: 48px;
+  border-radius: 24px;
+  margin: 10px auto;
+  position: relative;
+  max-width: 720px;
+  justify-content: center;
+  background-color: rgb(210, 224, 238);
+}
+
+.newBody {
+  width: 100%;
+  min-width: 100vw;
+  box-sizing: border-box;
 }
