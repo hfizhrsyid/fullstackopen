@@ -25,6 +25,9 @@ function App() {
     }
 
     const filteredCountries = countries.filter(country => country.name.common.includes(input))
+    const handleCountryClick = country => {
+      setInput(country.name.common)
+    }
 
     if(filteredCountries.length > 10) {
       return (
@@ -33,7 +36,7 @@ function App() {
     } else if (filteredCountries.length > 1) {
       return (
         <ul>
-          {filteredCountries.map(country => <li key={country.name.common}>{country.name.common}</li>)}
+          {filteredCountries.map(country => <li key={country.name.common}>{country.name.common} <button onClick={() => handleCountryClick(country)}>show</button></li>)}
         </ul>
       )
     } else if (filteredCountries.length === 1) {
