@@ -76,6 +76,10 @@ const App = () => {
         setBooleanStatus(true)
         setStatus(`Added ${response.data.name}`)
       })    
+      .catch(error => {
+        setBooleanStatus(false)
+        setStatus(error.response.data.error)
+      })
     }
   }
 
