@@ -3,7 +3,6 @@ const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const Person = require('./models/person')
-const { default: mongoose } = require('mongoose')
 
 app.use(express.json())
 morgan.token('data', (req) => JSON.stringify(req.body))
@@ -45,12 +44,12 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/info', (request, response) => {
+app.get('/info', async (request, response) => {
     const now = new Date();
     const timeString = now.toUTCString();
 
     console.log("Current time:", timeString);
-    response.send(`<p>Phonebook has info for ${Person} people ${timeString}`)   
+    response.send(`<p>Phonebook has info for ${await Person.countDocuments( {}, { hint: "_id_"} )} people ${timeString}`)   
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
