@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
+const Person = require('./models/person')
+const { default: mongoose } = require('mongoose')
 
 app.use(express.json())
 morgan.token('data', (req) => JSON.stringify(req.body))
@@ -8,35 +11,38 @@ morgan.token('data', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :data'));
 app.use(express.static('dist'))
 
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+
+// let persons = [
+//     { 
+//       "id": "1",
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": "2",
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": "3",
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": "4",
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ]
 
 app.get('/', (request, response) => {
     response.send('Halo!')
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(people => {
+        response.json(people)
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -44,25 +50,41 @@ app.get('/info', (request, response) => {
     const timeString = now.toUTCString();
 
     console.log("Current time:", timeString);
-    response.send(`<p>Phonebook has info for ${persons.length} people ${timeString}`)   
+    response.send(`<p>Phonebook has info for ${Person.length} people ${timeString}`)   
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const person = persons.find(p => p.id === request.params.id)
-
-    if (person) {
-        response.json(person)
-    } else {
-        response.status(204).end()
-    }
+    Person
+        .findById(request.params.id)
+        .then(result => {
+            if (result) {
+                response.json(result)
+            } else {
+                response.send(`No such person`)
+            }
+        })
+        .catch(error => {
+            response.send(error.message)
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const person = persons.find(p => p.id === request.params.id)
-    persons = persons.filter(p => p !== person)
+    console.log(request.params.id)
+    Person
+        .findByIdAndDelete(request.params.id)
+        .then(result => {
+            console.log(result)
+            if (result) {
+                response.json(result)
+            } else {
+                response.send(`No such person`)
+            }
+        })
+        .catch(error => {
+            console.log(error.message)
+            response.status(204).end()
+        })
 
-    response.json(person)
-    response.status(204).end()
 })
 
 const generateRandomId = () => {
@@ -80,23 +102,24 @@ app.post('/api/persons', (request, response) => {
         return response.status(400).json({
             error: "number is missing"
         })
-    } else if (persons.find(person => person.name === body.name)) {
+    } else if (Person.find({name: body.name}).length > 0) {
         return response.status(400).json({
             error: "name must be unique"
         })
     }
 
-    const person = {
+    const person = new Person({
         name: body.name,
-        number: body.number,
-        id: generateRandomId() 
-    }
+        number: body.number
+    })
 
-    persons = persons.concat(person)
-    response.json(persons)
+    person.save().then(result => {
+        console.log(`${result.name} with number ${result.number} is saved to the phonebook`)
+        response.json(person)
+    })
 })
 
-const PORT = 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
