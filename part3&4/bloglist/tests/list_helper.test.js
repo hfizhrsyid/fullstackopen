@@ -1,6 +1,18 @@
-const { test, describe } = require('node:test')
+const { test, describe, after } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
+const app = require('../app')
+const mongoose = require('mongoose')
+const supertest = require('supertest')
+
+const api = supertest(app)
+
+test('all blog are returned', async () => {
+  await api
+    .get('/api/blogs')
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
 
 test('dummy returns one', () => {
   const blogs = []
@@ -82,3 +94,30 @@ describe('total likes', () => {
     assert.strictEqual(result, 25)
   })
 })
+
+after(async () => {
+  await mongoose.connection.close()
+})
+
+// describe('favorite blog', () => {
+//     const listWithNoBlog = []
+
+//     const listWithOneBlog = []
+
+//     const listWithManyBlog = []
+
+//     test('when there is no blog', () => {
+//         const result = listHelper.favoriteBlog(listWithNoBlog)
+//         assert.strictEqual(result, listWithNoBlog)
+//     })
+
+//     test('when the is one blog in a list', () => {
+//         const result = listHelper.favoriteBlog(listWithOneBlog)
+//         // assert.deepStrictEqual(result, )
+//     })
+
+//     test('when there are many blogs in a list', () => {
+//         const result = listHelper.favoriteBlog(listWithManyBlog)
+//         // assert.deepStrictEqual(result, )
+//     })
+// })

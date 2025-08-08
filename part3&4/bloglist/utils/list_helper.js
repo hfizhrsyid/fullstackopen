@@ -7,6 +7,10 @@ const totalLikes = (listOfBlogs) => {
     return sumWithValue
 }
 
+// const favoriteBlog = (listOfBlogs) => {
+//     const sumWithValue = list
+// }
+
 module.exports = {
     dummy, totalLikes
 }
