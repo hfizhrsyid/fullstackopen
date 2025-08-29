@@ -14,6 +14,19 @@ test('all blog are returned', async () => {
     .expect('Content-Type', /application\/json/)
 })
 
+test('blog property is id', async () => {
+  const postBlog = {
+      _id: '5a422aa71b54a676234d17f8',
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+      likes: 5,
+      __v: 0
+    }
+  
+  assert.strictEqual(listHelper.idCheck(postBlog).id, "5a422aa71b54a676234d17f8")
+})
+
 test('dummy returns one', () => {
   const blogs = []
 
@@ -98,26 +111,3 @@ describe('total likes', () => {
 after(async () => {
   await mongoose.connection.close()
 })
-
-// describe('favorite blog', () => {
-//     const listWithNoBlog = []
-
-//     const listWithOneBlog = []
-
-//     const listWithManyBlog = []
-
-//     test('when there is no blog', () => {
-//         const result = listHelper.favoriteBlog(listWithNoBlog)
-//         assert.strictEqual(result, listWithNoBlog)
-//     })
-
-//     test('when the is one blog in a list', () => {
-//         const result = listHelper.favoriteBlog(listWithOneBlog)
-//         // assert.deepStrictEqual(result, )
-//     })
-
-//     test('when there are many blogs in a list', () => {
-//         const result = listHelper.favoriteBlog(listWithManyBlog)
-//         // assert.deepStrictEqual(result, )
-//     })
-// })

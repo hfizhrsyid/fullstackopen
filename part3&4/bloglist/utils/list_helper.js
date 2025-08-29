@@ -1,3 +1,5 @@
+const Blog = require('../models/blog')
+
 const dummy = (blogs) => {
     return 1
 }
@@ -7,10 +9,11 @@ const totalLikes = (listOfBlogs) => {
     return sumWithValue
 }
 
-// const favoriteBlog = (listOfBlogs) => {
-//     const sumWithValue = list
-// }
+const idCheck = (postBlog) => {
+    const blog = new Blog(postBlog)
+    return blog
+}
 
 module.exports = {
-    dummy, totalLikes
+    dummy, totalLikes, idCheck
 }
