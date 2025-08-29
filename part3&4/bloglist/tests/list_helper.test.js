@@ -1,4 +1,5 @@
 const { test, describe, after } = require('node:test')
+const { expect } = require('expect');
 const assert = require('node:assert')
 const listHelper = require('../utils/list_helper')
 const app = require('../app')
@@ -12,6 +13,25 @@ test('all blog are returned', async () => {
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
+})
+
+test('blog can be posted', async () => {
+  const postBlog = {
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
+      likes: 5,
+      __v: 0
+    }
+
+  await api
+    .post('/api/blogs')
+    .send(postBlog)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAtEnd = await listHelper.blogsInDb()
+  expect(blogsAtEnd).toHaveLength(listHelper.initialBlogs.length + 9)
 })
 
 test('blog property is id', async () => {
